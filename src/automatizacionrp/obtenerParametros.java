@@ -46,7 +46,7 @@ public class obtenerParametros {
             log.error(e);
             pdi="";
         }
-        if(pdi.equals("[]") || pdi.equals("")){
+        if(pdi.length()<= 2){
         log.info("No existe planificacion pendiente");
         return param;
         }
@@ -69,20 +69,19 @@ public class obtenerParametros {
                     + "WHERE conf.activo=true and elemento='cluster'and pe.id_plan_ejecucion=ppe.id_plan_ejecucion "
                     + "and ppe.status_plan='en espera' and ppe.activo=true) and pe.timestamp_planificacion::timestamp <= now()::timestamp limit 1;");
 
-
             bd_pys = Servicio.queryapp("SELECT  conf.json_config , pe.id_plan_ejecucion , jo.job "
                     + "FROM public.config as conf, public.plan_ejecuciones as pe , public.pasos_plan_ejecucion as ppe, "
                     + "public.jobs as jo WHERE conf.activo=true and elemento='bd_pys' and pe.id_job=jo.id_job "
-                    + "and pe.id_plan_ejecucion=ppe.id_plan_ejecucion and ppe.status_plan='en espera' and ppe.activo=true"
+                    + "and pe.id_plan_ejecucion=ppe.id_plan_ejecucion and ppe.status_plan='en espera' and ppe.activo=true "
                     + "and pe.timestamp_planificacion in (SELECT min(pe.timestamp_planificacion) FROM public.config as conf,"
                     + "public.plan_ejecuciones as pe , public.pasos_plan_ejecucion as ppe WHERE conf.activo=true "
                     + "and elemento='bd_pys'and pe.id_plan_ejecucion=ppe.id_plan_ejecucion and ppe.status_plan='en espera' and ppe.activo=true) "
                     + "and pe.timestamp_planificacion::timestamp <= now()::timestamp limit 1;");
 
-
             tienda = Servicio.queryapp("SELECT t.tienda,t.host_bd_oracle,t.usuario_bd_oracle,t.pass_usuario_bd_oracle,t.bd_oracle\n" +
                                     "  FROM public.plan_ejecuciones as pe,public.tiendas as t\n" +
                                     "  where pe.id_plan_ejecucion="+id+" and pe.id_tienda=t.id_tienda;");
+
         } catch (Exception e) {
             log.error("Excepción obteniendo parámetros cluster , bd_pys y tienda :");
             log.error(e);
@@ -153,7 +152,7 @@ public class obtenerParametros {
         }else{
             log.warn("No se obtuvieron los valores del PDI");
         }
-        if(!cluster.equals("[]") && !cluster.equals("")){
+        if(cluster.length()>2){
             aux = "";
             cluster = cluster.substring(1, cluster.length()-1);
             elementObject = parser.parse(cluster);                   
@@ -181,7 +180,7 @@ public class obtenerParametros {
         }else{
            log.warn("No se obtuvieron los valores del cluster");
         }
-        if(!bd_pys.equals("[]") && !bd_pys.equals("")){
+        if(bd_pys.length()>2){
             aux = "";
             bd_pys = bd_pys.substring(1, bd_pys.length()-1);
             elementObject = parser.parse(bd_pys);                   
@@ -206,7 +205,7 @@ public class obtenerParametros {
         }else{
            log.warn("No se obtuvieron los valores de bd_pys");
         }
-        if(!tienda.equals("[]") && !tienda.equals("")){
+        if(tienda.length()>2){
             aux = "";
             tienda = tienda.substring(1, tienda.length()-1);
             elementObject = parser.parse(tienda);                   
